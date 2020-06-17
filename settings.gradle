@@ -1,2 +1,3 @@
-include ':app'
+include ':models', ':aars', ':app'
+
 rootProject.name = "SpasKrovi"
