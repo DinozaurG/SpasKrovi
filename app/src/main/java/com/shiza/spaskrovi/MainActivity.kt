@@ -9,42 +9,66 @@ import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.*
+import com.google.android.gms.tasks.Task
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
     val RequestPermissionCode = 1
-    val floatNumForGPS: Float = 7.0F
-    lateinit var pendingIntent: PendingIntent
     private lateinit var mTTS: TextToSpeech
-    private var speakButton: Int = R.id.button
     var text = ""
-    var location: Location? = null
-    lateinit var locationManager: LocationManager
-    var GpsStatus = false
-    var criteria: Criteria? = null
-    var Holder: String? = null
-    lateinit var context: Context
     lateinit var latitude: String
     lateinit var longitude: String
+    //lateinit var location: Task<Location>
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
+    val locationRequest = LocationRequest.create()?.apply {
+        interval = 10000
+        fastestInterval = 5000
+        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         EnableRuntimePermission()
-        var intent1 = createIntent("action 1", "extra 1")
-        pendingIntent = PendingIntent.getBroadcast(this, 0, intent1, 0)
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
-        criteria = Criteria()
-
-        Holder = locationManager.getBestProvider(criteria, false)
-        context = applicationContext
-        checkGpsStatus()
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+                for (location in locationResult.locations){
+                    latitude = location.latitude.toString()
+                    longitude = location.longitude.toString()
+                }
+            }
+        }
+        fusedLocationClient.requestLocationUpdates(locationRequest,
+            locationCallback,
+            Looper.getMainLooper())
         mTTS = TextToSpeech(
             this,
             TextToSpeech.OnInitListener() {
@@ -75,8 +99,8 @@ class MainActivity : AppCompatActivity() {
         var speed = 1f
         mTTS.setPitch(pitch)
         mTTS.setSpeechRate(speed)
-        longitude = "Gps not"
-        latitude = "Working"
+        longitude = "0"
+        latitude = "0"
     }
     override fun onDestroy() {
         super.onDestroy()
@@ -84,62 +108,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun speak(view: View) {
-        checkGpsStatus()
-        if(GpsStatus) {
-            if (Holder != null) {
-                if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return
-                }
-                location = locationManager.getLastKnownLocation(Holder)
-                locationManager.requestLocationUpdates(Holder, 12000, floatNumForGPS, pendingIntent)
-                if (location != null) {
-                    longitude = location!!.longitude.toString()
-                    latitude = location!!.latitude.toString()
-                }
-                text = "Latitude\n" +
-                        "is\n" +
-                        latitude + "\n" +
-                        "and\n" +
-                        "Longitude\n" +
-                        "is\n" +
-                        longitude + "\n"
-                mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null)
-            } else {
-                mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null)
-            }
-        } else {
-            Toast.makeText(this, "Please Enable GPS First", Toast.LENGTH_LONG).show()
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
         }
+        /*fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+                if (location != null) {
+                    latitude = location.latitude.toString()
+                    longitude = location.longitude.toString()
+                }
+            }*/
+        Toast.makeText(this,"$latitude $longitude", Toast.LENGTH_LONG).show();
+        text = "Latitude\n" +
+                "is\n" +
+                latitude + "\n" +
+                "and\n" +
+                "Longitude\n" +
+                "is\n" +
+                longitude + "\n"
+
+        mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null)
     }
     fun stop(view: View) {
         if (mTTS != null) {
             mTTS.stop()
         }
-    }
-    fun checkGpsStatus() {
-        locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
-        GpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-    }
-    fun createIntent(action: String, extra: String): Intent {
-        var intent = Intent(this, MainActivity::class.java)
-        intent.setAction(action)
-        intent.putExtra("extra", extra)
-        return intent
     }
     fun EnableRuntimePermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(
