@@ -22,22 +22,23 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
-
 import android.os.CountDownTimer;
+import android.telephony.SmsManager;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.shiza.spaskrovi.R;
 
@@ -59,6 +60,9 @@ public class KaldiActivity extends Activity implements
     static {
         System.loadLibrary("kaldi_jni");
     }
+    // звонок и сообщение
+    static private final String number = "tel:89059928516";//пишите свой номер
+    static private final String messageText = "Test message";
 
     static private final int STATE_START = 0;
     static private final int STATE_READY = 1;
@@ -76,7 +80,8 @@ public class KaldiActivity extends Activity implements
 
     /* Used to handle permission request */
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
-
+    static private final int PERMISSIONS_REQUEST_CALL_PHONE = 1;
+    static private final int PERMISSIONS_REQUEST_SEND_SMS = 1;
 
     private Model model;
     private SpeechRecognizer recognizer;
@@ -107,11 +112,17 @@ public class KaldiActivity extends Activity implements
         });
 
 
-        // Check if user has given permission to record audio
+        // Check if user has given permission to record audio, call phone and send sms
         int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSIONS_REQUEST_RECORD_AUDIO);
             return;
+        }
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SEND_SMS}, PERMISSIONS_REQUEST_SEND_SMS);
+        }
+        if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CALL_PHONE}, PERMISSIONS_REQUEST_CALL_PHONE);
         }
         // Recognizer initialization is a time-consuming and it involves IO,
         // so we execute it in async task
@@ -244,9 +255,9 @@ public class KaldiActivity extends Activity implements
                     Toast toast = Toast.makeText(getApplicationContext(),
                             "Таймер прошел!", Toast.LENGTH_SHORT);
                     toast.show();
+                    phoneCall(number);
                 }
             }.start();
-
         }
         resultView.append(hypothesis + "\n");
     }
@@ -360,6 +371,28 @@ public class KaldiActivity extends Activity implements
             } catch (IOException e) {
                 setErrorState(e.getMessage());
             }
+        }
+    }
+
+    public boolean phoneCall(String number) {
+        try {
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SEND_SMS}, PERMISSIONS_REQUEST_SEND_SMS);
+            }
+            SmsManager.getDefault()
+                    .sendTextMessage(number, null, messageText, null, null);
+            Intent intent = new Intent(Intent.ACTION_CALL);
+            intent.setData(Uri.parse(number));
+            if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CALL_PHONE}, PERMISSIONS_REQUEST_CALL_PHONE);
+            }
+            startActivity(intent);
+            //SmsManager.getDefault()
+             //       .sendTextMessage(number, null, messageText.toString(), null, null); // закомментированы смс чтобы не тратить деньги, код рабочий
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
