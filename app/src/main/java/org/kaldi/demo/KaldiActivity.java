@@ -27,7 +27,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.telephony.SmsManager;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -379,16 +378,14 @@ public class KaldiActivity extends Activity implements
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SEND_SMS}, PERMISSIONS_REQUEST_SEND_SMS);
             }
-            SmsManager.getDefault()
-                    .sendTextMessage(number, null, messageText, null, null);
+            //SmsManager.getDefault()
+            //        .sendTextMessage(number, null, messageText, null, null);// закомментированы смс чтобы не тратить деньги, код рабочий
             Intent intent = new Intent(Intent.ACTION_CALL);
             intent.setData(Uri.parse(number));
             if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CALL_PHONE}, PERMISSIONS_REQUEST_CALL_PHONE);
             }
             startActivity(intent);
-            //SmsManager.getDefault()
-             //       .sendTextMessage(number, null, messageText.toString(), null, null); // закомментированы смс чтобы не тратить деньги, код рабочий
             return true;
         } catch (Exception e) {
             e.printStackTrace();
