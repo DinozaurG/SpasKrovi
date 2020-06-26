@@ -43,7 +43,6 @@ import androidx.core.content.ContextCompat;
 import com.shiza.spaskrovi.R;
 
 import org.kaldi.Assets;
-import org.kaldi.KaldiRecognizer;
 import org.kaldi.Model;
 import org.kaldi.RecognitionListener;
 import org.kaldi.SpeechRecognizer;
@@ -51,7 +50,6 @@ import org.kaldi.Vosk;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
 
 public class KaldiActivity extends Activity implements
@@ -61,8 +59,8 @@ public class KaldiActivity extends Activity implements
         System.loadLibrary("kaldi_jni");
     }
     // звонок и сообщение
-    static private final String number = "tel:89059928516";//пишите свой номер
-    static private final String messageText = "Test message";
+    static private final String number = "tel:89137573584";//пишите свой номер
+    static private final String messageText = "Проверка работы";
 
     static private final int STATE_START = 0;
     static private final int STATE_READY = 1;
@@ -70,8 +68,6 @@ public class KaldiActivity extends Activity implements
     static private final int STATE_FILE = 3;
     static private final int STATE_MIC  = 4;
 
-    //  Уведомления
-    private NotificationManager notificationManager;
     private static final int NOTIFY_ID = 101;
     private static final String CHANNEL_ID = "CHANNEL_ID";
 
@@ -92,17 +88,9 @@ public class KaldiActivity extends Activity implements
         super.onCreate(state);
         setContentView(R.layout.main);
 
-
         // Setup layout
         resultView = findViewById(R.id.result_text);
         setUiState(STATE_START);
-
-        findViewById(R.id.recognize_file).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                recognizeFile();
-            }
-        });
 
         findViewById(R.id.recognize_mic).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -162,56 +150,6 @@ public class KaldiActivity extends Activity implements
         }
     }
 
-    private class RecognizeTask extends AsyncTask<Void, Void, String> {
-        WeakReference<KaldiActivity> activityReference;
-        WeakReference<TextView> resultView;
-
-        RecognizeTask(KaldiActivity activity, TextView resultView) {
-            this.activityReference = new WeakReference<>(activity);
-            this.resultView = new WeakReference<>(resultView);
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            KaldiRecognizer rec;
-            long startTime = System.currentTimeMillis();
-            StringBuilder result = new StringBuilder();
-            try {
-                rec = new KaldiRecognizer(activityReference.get().model, 16000.f, "oh zero one two three four five six seven eight nine");
-
-                InputStream ais = activityReference.get().getAssets().open("10001-90210-01803.wav");
-                if (ais.skip(44) != 44) {
-                    return "";
-                }
-                byte[] b = new byte[4096];
-                int nbytes;
-                while ((nbytes = ais.read(b)) >= 0) {
-                    if (rec.AcceptWaveform(b, nbytes)) {
-                        result.append(rec.Result());
-
-                    } else {
-                        result.append(rec.PartialResult());
-                    }
-                }
-                result.append(rec.FinalResult());
-
-
-            } catch (IOException e) {
-                return "";
-            }
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    result, Toast.LENGTH_SHORT);
-            toast.show();
-            return String.format(activityReference.get().getString(R.string.elapsed), result.toString(), (System.currentTimeMillis() - startTime));
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            activityReference.get().setUiState(STATE_READY);
-            resultView.get().append(result + "\n");
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -265,7 +203,8 @@ public class KaldiActivity extends Activity implements
 
     public void notification(){
 
-        notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        //  Уведомления
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         
         Intent intent = new Intent(getApplicationContext(), KaldiActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -317,29 +256,24 @@ public class KaldiActivity extends Activity implements
             case STATE_START:
                 resultView.setText(R.string.preparing);
                 resultView.setMovementMethod(new ScrollingMovementMethod());
-                findViewById(R.id.recognize_file).setEnabled(false);
                 findViewById(R.id.recognize_mic).setEnabled(false);
                 break;
             case STATE_READY:
                 resultView.setText(R.string.ready);
                 ((Button) findViewById(R.id.recognize_mic)).setText(R.string.recognize_microphone);
-                findViewById(R.id.recognize_file).setEnabled(true);
                 findViewById(R.id.recognize_mic).setEnabled(true);
                 break;
             case STATE_DONE:
                 ((Button) findViewById(R.id.recognize_mic)).setText(R.string.recognize_microphone);
-                findViewById(R.id.recognize_file).setEnabled(true);
                 findViewById(R.id.recognize_mic).setEnabled(true);
                 break;
             case STATE_FILE:
                 resultView.setText(getString(R.string.starting));
                 findViewById(R.id.recognize_mic).setEnabled(false);
-                findViewById(R.id.recognize_file).setEnabled(false);
                 break;
             case STATE_MIC:
                 ((Button) findViewById(R.id.recognize_mic)).setText(R.string.stop_microphone);
                 resultView.setText(getString(R.string.say_something));
-                findViewById(R.id.recognize_file).setEnabled(false);
                 findViewById(R.id.recognize_mic).setEnabled(true);
                 break;
         }
@@ -348,14 +282,10 @@ public class KaldiActivity extends Activity implements
     private void setErrorState(String message) {
         resultView.setText(message);
         ((Button) findViewById(R.id.recognize_mic)).setText(R.string.recognize_microphone);
-        findViewById(R.id.recognize_file).setEnabled(false);
         findViewById(R.id.recognize_mic).setEnabled(false);
     }
 
-    public void recognizeFile() {
-        setUiState(STATE_FILE);
-        new RecognizeTask(this, resultView).execute();
-    }
+
 
     public void recognizeMicrophone() {
         if (recognizer != null) {
