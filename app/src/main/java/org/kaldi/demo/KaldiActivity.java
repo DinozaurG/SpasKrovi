@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+
 public class KaldiActivity extends Activity implements
         RecognitionListener {
 
@@ -66,12 +67,13 @@ public class KaldiActivity extends Activity implements
     static private final int STATE_DONE = 2;
     static private final int STATE_FILE = 3;
     static private final int STATE_MIC  = 4;
-    private static final String TAG = "MyApp";
 
     private static final int NOTIFY_ID = 101;
     private static final String CHANNEL_ID = "CHANNEL_ID";
 
     private static final String CODE_WORD = "help";
+
+    private static final String TAG1 = "MyApp";
 
 
     /* Used to handle permission request */
@@ -81,7 +83,6 @@ public class KaldiActivity extends Activity implements
 
     private Model model;
     private SpeechRecognizer recognizer;
-    TextView resultView;
 
     @Override
     public void onCreate(Bundle state) {
@@ -187,6 +188,8 @@ public class KaldiActivity extends Activity implements
                 public void onTick(long millisUntilFinished) {
                 }
                 public void onFinish() {
+
+
                     Toast toast = Toast.makeText(getApplicationContext(),
                             "Таймер прошел!", Toast.LENGTH_SHORT);
                     toast.show();
@@ -194,7 +197,7 @@ public class KaldiActivity extends Activity implements
                 }
             }.start();
         }
-        Log.i(TAG, hypothesis + "\n");
+        Log.i(TAG1, hypothesis );
     }
 
 
@@ -202,7 +205,7 @@ public class KaldiActivity extends Activity implements
 
         //  Уведомления
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        
+
         Intent intent = new Intent(getApplicationContext(), KaldiActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent contentIntent = PendingIntent.getActivity(KaldiActivity.this,
@@ -233,7 +236,7 @@ public class KaldiActivity extends Activity implements
 
     @Override
     public void onPartialResult(String hypothesis) {
-        Log.i(TAG, hypothesis + "\n");
+        Log.i(TAG1, hypothesis );
     }
 
     @Override
@@ -251,33 +254,24 @@ public class KaldiActivity extends Activity implements
     private void setUiState(int state) {
         switch (state) {
             case STATE_START:
-                resultView.setText(R.string.preparing);
-                resultView.setMovementMethod(new ScrollingMovementMethod());
+            case STATE_FILE:
                 findViewById(R.id.recognize_mic).setEnabled(false);
                 break;
             case STATE_READY:
-                resultView.setText(R.string.ready);
                 ((Button) findViewById(R.id.recognize_mic)).setText(R.string.recognize_microphone);
                 findViewById(R.id.recognize_mic).setEnabled(true);
                 break;
             case STATE_DONE:
-                ((Button) findViewById(R.id.recognize_mic)).setText(R.string.recognize_microphone);
                 findViewById(R.id.recognize_mic).setEnabled(true);
-                break;
-            case STATE_FILE:
-                resultView.setText(getString(R.string.starting));
-                findViewById(R.id.recognize_mic).setEnabled(false);
                 break;
             case STATE_MIC:
                 ((Button) findViewById(R.id.recognize_mic)).setText(R.string.stop_microphone);
-                resultView.setText(getString(R.string.say_something));
                 findViewById(R.id.recognize_mic).setEnabled(true);
                 break;
         }
     }
 
     private void setErrorState(String message) {
-        resultView.setText(message);
         ((Button) findViewById(R.id.recognize_mic)).setText(R.string.recognize_microphone);
         findViewById(R.id.recognize_mic).setEnabled(false);
     }
