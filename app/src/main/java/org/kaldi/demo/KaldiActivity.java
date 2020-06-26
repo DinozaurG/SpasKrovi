@@ -19,14 +19,20 @@ import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Looper;
+import android.speech.tts.TextToSpeech;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +45,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.shiza.spaskrovi.R;
 
 import org.kaldi.Assets;
@@ -50,6 +61,7 @@ import org.kaldi.Vosk;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 
 public class KaldiActivity extends Activity implements
@@ -58,20 +70,21 @@ public class KaldiActivity extends Activity implements
     static {
         System.loadLibrary("kaldi_jni");
     }
+
     // звонок и сообщение
-    static private final String number = "tel:89137573584";//пишите свой номер
+    static private final String number = "tel:89234434521";//пишите свой номер
     static private final String messageText = "Проверка работы";
 
     static private final int STATE_START = 0;
     static private final int STATE_READY = 1;
     static private final int STATE_DONE = 2;
     static private final int STATE_FILE = 3;
-    static private final int STATE_MIC  = 4;
+    static private final int STATE_MIC = 4;
 
     private static final int NOTIFY_ID = 101;
     private static final String CHANNEL_ID = "CHANNEL_ID";
 
-    private static final String CODE_WORD = "help";
+    private static final String CODE_WORD = "no";
 
     private static final String TAG1 = "MyApp";
 
@@ -83,6 +96,15 @@ public class KaldiActivity extends Activity implements
 
     private Model model;
     private SpeechRecognizer recognizer;
+
+    int RequestPermissionCode = 1;
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationCallback locationCallback;
+    TextToSpeech mTTS;
+    String text = "";
+    String latitude;
+    String longitude;
+    LocationRequest locationRequest = new LocationRequest();
 
     @Override
     public void onCreate(Bundle state) {
@@ -106,17 +128,121 @@ public class KaldiActivity extends Activity implements
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSIONS_REQUEST_RECORD_AUDIO);
             return;
         }
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SEND_SMS}, PERMISSIONS_REQUEST_SEND_SMS);
         }
-        if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CALL_PHONE}, PERMISSIONS_REQUEST_CALL_PHONE);
         }
         // Recognizer initialization is a time-consuming and it involves IO,
         // so we execute it in async task
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        EnableRuntimePermission();
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    latitude = String.valueOf(location.getLatitude());
+                    longitude = String.valueOf(location.getLongitude());
+                }
+            }
+        };
+        startLocationUpdates();
+        mTTS = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = mTTS.setLanguage(Locale.ENGLISH);
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("TTS", "Language not supported");
+                    }
+                } else {
+                    Log.e("TTS", "Initialization failed");
+                }
+            }
+        });
+        mTTS.setLanguage(Locale.ENGLISH);
+        /*text = "Uh, summa-lumma, dooma-lumma, you assumin' I'm a human\n" +
+                "What I gotta do to get it through to you I'm superhuman?\n" +
+                "Innovative and I'm made of rubber so that anything you say is ricochetin' off of me and it'll glue to you and\n" +
+                "I'm devastating, more than ever demonstrating\n" +
+                "How to give a motherfuckin' audience a feeling like it's levitating\n" +
+                "Never fading, and I know the haters are forever waiting\n" +
+                "For the day that they can say I fell off, they'll be celebrating\n" +
+                "'Cause I know the way to get 'em motivated\n" +
+                "I make elevating music, you make elevator music"*/
+        float pitch = 1f;
+        float speed = 1f;
+        mTTS.setPitch(pitch);
+        mTTS.setSpeechRate(speed);
+        longitude = "0";
+        latitude = "0";
         new SetupTask(this).execute();
     }
 
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        fusedLocationClient.requestLocationUpdates(locationRequest,
+                locationCallback,
+                Looper.getMainLooper());
+    }
+    public void speak() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Toast.makeText(this, latitude + " " + longitude, Toast.LENGTH_LONG).show();
+        text = "I need your help\n" +
+                "I am in danger\n" +
+                "My latitude\n" +
+                "is\n" +
+                latitude + "\n" +
+                "and\n" +
+                "Longitude\n" +
+                "is\n" +
+                longitude + "\n";
+        new CountDownTimer(30000, 5000) {
+            public void onTick(long millisUntilFinished) {
+                mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+            }
+            public void onFinish() {
+            }
+        }.start();
+
+    }
+    public void stop() {
+        if (mTTS != null) {
+            mTTS.stop();
+        }
+    }
     private static class SetupTask extends AsyncTask<Void, Void, Exception> {
         WeakReference<KaldiActivity> activityReference;
 
@@ -167,6 +293,12 @@ public class KaldiActivity extends Activity implements
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        startLocationUpdates();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
@@ -183,7 +315,6 @@ public class KaldiActivity extends Activity implements
         // Сюда добавляем все, что начинает работать после код слова, лучше после таймера.
         if(hypothesis.contains(CODE_WORD)){
             notification();
-
             new CountDownTimer(10000, 1000) {
                 public void onTick(long millisUntilFinished) {
                 }
@@ -308,11 +439,24 @@ public class KaldiActivity extends Activity implements
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CALL_PHONE}, PERMISSIONS_REQUEST_CALL_PHONE);
             }
             startActivity(intent);
+            new CountDownTimer(6000, 1000) {
+                public void onTick(long millisUntilFinished) {
+                }
+                public void onFinish() {
+                    speak();
+                }
+            }.start();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
-
+    public void EnableRuntimePermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            Toast.makeText(this, "ACCESS_FINE_LOCATION permission allows us to Access GPS in app", Toast.LENGTH_LONG).show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RequestPermissionCode);
+        }
+    }
 }
