@@ -66,6 +66,7 @@ public class KaldiActivity extends Activity implements
     static private final int STATE_DONE = 2;
     static private final int STATE_FILE = 3;
     static private final int STATE_MIC  = 4;
+    private static final String TAG = "MyApp";
 
     private static final int NOTIFY_ID = 101;
     private static final String CHANNEL_ID = "CHANNEL_ID";
@@ -88,7 +89,6 @@ public class KaldiActivity extends Activity implements
         setContentView(R.layout.main);
 
         // Setup layout
-        resultView = findViewById(R.id.result_text);
         setUiState(STATE_START);
 
         findViewById(R.id.recognize_mic).setOnClickListener(new View.OnClickListener() {
@@ -187,8 +187,6 @@ public class KaldiActivity extends Activity implements
                 public void onTick(long millisUntilFinished) {
                 }
                 public void onFinish() {
-
-
                     Toast toast = Toast.makeText(getApplicationContext(),
                             "Таймер прошел!", Toast.LENGTH_SHORT);
                     toast.show();
@@ -196,7 +194,7 @@ public class KaldiActivity extends Activity implements
                 }
             }.start();
         }
-        resultView.append(hypothesis + "\n");
+        Log.i(TAG, hypothesis + "\n");
     }
 
 
@@ -235,7 +233,7 @@ public class KaldiActivity extends Activity implements
 
     @Override
     public void onPartialResult(String hypothesis) {
-        resultView.append(hypothesis + "\n");
+        Log.i(TAG, hypothesis + "\n");
     }
 
     @Override
