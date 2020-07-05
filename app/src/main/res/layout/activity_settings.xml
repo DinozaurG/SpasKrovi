@@ -22,7 +22,8 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/TextInfoHeader"
+            android:textColor="#000000"
+            android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Общая информация"
@@ -31,30 +32,38 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="4dp">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Имя" />
+                android:id="@+id/name"
+                android:hint="Имя"
+                android:textSize="14sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+
+            android:layout_marginTop="4dp">
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:id="@+id/surname"
                 android:hint="Фамилия" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="4dp">
         <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
+                android:textSize="14sp"
                 android:layout_height="wrap_content"
+                android:id="@+id/middleName"
                 android:hint="Отчество" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -62,22 +71,83 @@
             android:id="@+id/TextInfoMiddle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:text="Медицинская информация"
-            android:layout_marginVertical="16dp"/>
+            android:textColor="#000000"
+            android:textSize="18sp" />
 
         <Spinner
-            android:id="@+id/bloodGroup"
+            android:layout_marginTop="8dp"
+            android:id="@+id/selectedBloodGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:spinnerMode="dropdown"
             android:entries="@array/bloodGroup" />
         <Spinner
-            android:layout_marginTop="16dp"
-            android:id="@+id/bloodFactor"
+            android:layout_marginTop="8dp"
+            android:id="@+id/selectedBloodFactor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:spinnerMode="dropdown"
             android:entries="@array/bloodFactor" />
+
+        <TextView
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:id="@+id/TextInfoBottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Информация для ЧС"
+            android:layout_marginTop="24dp"
+            />
+        <TextView
+            android:layout_marginTop="8dp"
+            android:id="@+id/changeCodeWordHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:text="Какое кодовые слово вы будете использовать?"
+           />
+        <Spinner
+            android:id="@+id/selectedCodeWord"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown"
+            android:entries="@array/changeCodeWord" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:id="@+id/selectedPhoneForCall"
+                android:textSize="14sp"
+                android:hint="Номер для сообщения что вы в опасности" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:hint="Пример сообщения для отправки" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:id="@+id/selectedMessage"
+            android:layout_marginTop="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:text="(В конце сообщения добавятся ваши координаты)"
+            />
+
+
     </LinearLayout>
     <LinearLayout
         android:layout_width="fill_parent"
