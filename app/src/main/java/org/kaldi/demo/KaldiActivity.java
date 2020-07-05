@@ -15,11 +15,9 @@
 package org.kaldi.demo;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -31,22 +29,16 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.appcompat.widget.ToolbarWidgetWrapper;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -79,6 +71,9 @@ public class KaldiActivity extends AppCompatActivity implements
 
     // звонок и сообщение
     static private final String number = "tel:89234434521";//пишите свой номер
+    static private final String numberPolice = "tel:89059928516";//пишите свой номер
+    static private final String numberAmbulance = "tel:89059928516";//пишите свой номер
+    static private final String numberFireService = "tel:89059928516";//пишите свой номер
     static private final String messageText = "Проверка работы";
 
     static private final int STATE_START = 0;
@@ -147,6 +142,26 @@ public class KaldiActivity extends AppCompatActivity implements
             }
         });
 
+        findViewById(R.id.call_ambulance).setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 phoneCall(numberAmbulance);
+             }
+        });
+
+        findViewById(R.id.call_fire).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                phoneCall(numberFireService);
+            }
+        });
+
+        findViewById(R.id.call_police).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                phoneCall(numberPolice);
+            }
+        });
 
         // Check if user has given permission to record audio, call phone and send sms
         int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);

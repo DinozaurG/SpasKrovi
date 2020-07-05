@@ -28,7 +28,7 @@
 
 
     <Button
-        android:id="@+id/TextView02"
+        android:id="@+id/call_ambulance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -43,26 +43,26 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/TextView05"/>
+        app:layout_constraintStart_toEndOf="@+id/call_fire"/>
 
     <Button
-        android:id="@+id/TextView04"
+        android:id="@+id/call_police"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/TextView05"
+        android:layout_toStartOf="@+id/call_fire"
         android:background="@color/colorPrimaryDark"
         android:padding="25dp"
         android:text="@string/police"
         android:textColor="#000000"
-        app:layout_constraintBottom_toTopOf="@+id/TextView02"
+        app:layout_constraintBottom_toTopOf="@+id/call_ambulance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recognize_mic"/>
 
     <Button
-        android:id="@+id/TextView05"
+        android:id="@+id/call_fire"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -75,10 +75,10 @@
         android:text="@string/fire"
         android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/TextView02"
+        app:layout_constraintEnd_toStartOf="@+id/call_ambulance"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TextView04"
+        app:layout_constraintTop_toBottomOf="@+id/call_police"
         app:layout_constraintVertical_bias="1.0"/>
 
 
