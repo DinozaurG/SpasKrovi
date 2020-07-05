@@ -10,4 +10,16 @@
     <string name="starting">Starting\n</string>
     <string name="say_something">Say something\n</string>
 
+    <string-array name="bloodGroup">
+        <item>1 группа крови</item>
+        <item>2 группа крови</item>
+        <item>3 группа крови</item>
+        <item>4 группа крови</item>
+    </string-array>
+
+    <string-array name="bloodFactor">
+        <item>Положителиный резус-фактор</item>
+        <item>Отрицательный резус-фактор</item>
+    </string-array>
+
 </resources>
