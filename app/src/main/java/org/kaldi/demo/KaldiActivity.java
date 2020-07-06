@@ -15,6 +15,7 @@
 package org.kaldi.demo;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -76,10 +77,14 @@ public class KaldiActivity extends AppCompatActivity implements
     static private final String numberAmbulance = "tel:89059928516";//пишите свой номер
     static private final String numberFireService = "tel:89059928516";//пишите свой номер
     private String messageText = "Проверка работы";
+    private String groupBlood = " Группа крови ";
+    private String resBlood = " резус ";
 
-    PersistantStorage sharedClass = PersistantStorage.init(this);
     public static final String STORAGE_NAME = "StorageName";
-    private SharedPreferences sharedPrefs;
+    //private SharedPreferences sharedPrefs;
+    //private static SharedPreferences settings = null;
+    //private static SharedPreferences.Editor editor = null;
+    //private static Context context = null;
 
     static private final int STATE_START = 0;
     static private final int STATE_READY = 1;
@@ -486,19 +491,26 @@ public class KaldiActivity extends AppCompatActivity implements
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SEND_SMS}, PERMISSIONS_REQUEST_SEND_SMS);
             }
-            SharedPreferences settings = null;
-            SharedPreferences.Editor editor = null;
-            sharedPrefs = getSharedPreferences(STORAGE_NAME , Context.MODE_PRIVATE);
-            editor = settings.edit();
-            //number = sharedPrefs.getString(APP_PREFERENCES_Number, "0");
+
+            SharedPreferences mySharedPreferences = getSharedPreferences(STORAGE_NAME, Activity.MODE_PRIVATE);
             if (flag){
-                number = "tel:" + settings.getString(APP_PREFERENCES_Number, "0");
-                messageText = settings.getString(APP_PREFERENCES_Message, "_")+
-                        " Группа крови " + settings.getString(APP_PREFERENCES_BloodNumber,"_") +
-                        " резуз "+ settings.getString(APP_PREFERENCES_BloodRes,"_");
+                number = "tel:" + mySharedPreferences.getString(APP_PREFERENCES_Number, "0");
+                Toast.makeText(this, number, Toast.LENGTH_SHORT).show();
+                //int bloodgroup = mySharedPreferences.getInt(APP_PREFERENCES_BloodNumber,5);
+                //int bloodres = mySharedPreferences.getInt(APP_PREFERENCES_BloodRes,3);
+                //Toast.makeText(this, bloodres, Toast.LENGTH_SHORT).show();
+                //String bloodFact = "0";
+                //if (bloodres == 0)
+                //    bloodFact = "+";
+                //if (bloodres == 1)
+                //    bloodFact = "-";
+                messageText = mySharedPreferences.getString(APP_PREFERENCES_Message, "_")+groupBlood + resBlood ;
+                Toast.makeText(this, messageText, Toast.LENGTH_SHORT);
                 SmsManager.getDefault()
                         .sendTextMessage(numberChoose, null, messageText, null, null);// закомментированы смс чтобы не тратить деньги, код рабочий
             }
+            Toast.makeText(this, "после флага", Toast.LENGTH_SHORT).show();
+
             Intent intent = new Intent(Intent.ACTION_CALL);
             intent.setData(Uri.parse(number));
             if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){

@@ -2,7 +2,7 @@
     <string name="app_name">SpasKrovi</string>
     <string name="recognize_file">Recognize File</string>
     <string name="recognize_microphone">Начать мониторинг</string>
-    <string name="stop_microphone">Stop Microphone</string>
+    <string name="stop_microphone">Закончить мониторинг</string>
     <string name="preparing">Preparing the recognizer\n</string>
     <string name="ready">Ready\n</string>
     <string name="failed">Failed to init recognizer %s\n</string>
