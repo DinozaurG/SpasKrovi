@@ -73,12 +73,13 @@ public class KaldiActivity extends AppCompatActivity implements
 
     // звонок и сообщение
     private String numberChoose = "tel:";//пишите свой номер
-    static private final String numberPolice = "tel:89137573584";//пишите свой номер
-    static private final String numberAmbulance = "tel:89137573584";//пишите свой номер
-    static private final String numberFireService = "tel:89137573584";//пишите свой номер
+    static private final String numberPolice = "tel:102";
+    static private final String numberAmbulance = "tel:103";
+    static private final String numberFireService = "tel:101";
     private String messageText = "Проверка работы";
-    private String groupBlood = " Группа крови ";
+    private String groupBlood = " группа крови ";
     private String resBlood = " резус ";
+    private String myName = " мое имя ";
 
     public static final String STORAGE_NAME = "StorageName";
     //private SharedPreferences sharedPrefs;
@@ -163,21 +164,21 @@ public class KaldiActivity extends AppCompatActivity implements
         findViewById(R.id.call_ambulance).setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 phoneCall(numberAmbulance, false);
+                 phoneCall(numberAmbulance);
              }
         });
 
         findViewById(R.id.call_fire).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                phoneCall(numberFireService, false);
+                phoneCall(numberFireService);
             }
         });
 
         findViewById(R.id.call_police).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                phoneCall(numberPolice, false);
+                phoneCall(numberPolice);
             }
         });
 
@@ -384,7 +385,7 @@ public class KaldiActivity extends AppCompatActivity implements
                     Toast toast = Toast.makeText(getApplicationContext(),
                             "Таймер прошел!", Toast.LENGTH_SHORT);
                     toast.show();
-                    phoneCall(numberPolice, true);
+                    phoneCall(numberPolice);
                 }
             }.start();
         }
@@ -486,7 +487,7 @@ public class KaldiActivity extends AppCompatActivity implements
         }
     }
 
-    public boolean phoneCall(String number, Boolean flag) {
+    public boolean phoneCall(String number) {
         try {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SEND_SMS}, PERMISSIONS_REQUEST_SEND_SMS);
@@ -501,22 +502,26 @@ public class KaldiActivity extends AppCompatActivity implements
                 String name = mySharedPreferences.getString(APP_PREFERENCES_FirstName,"имя");
                 String surname = mySharedPreferences.getString(APP_PREFERENCES_SecondName,"фамилия");
 
-                String bloodFact = "5";
-                if (bloodres == 0)
-                    bloodFact = "+";
-                if (bloodres == 1)
-                    bloodFact = "-";
+                String bloodFact = "";
+                switch (bloodres) {
+                    case 0:
+                        bloodFact = "+";
+                    case 1:
+                        bloodFact = "-";
+                }
 
-                String bloodGroupPrint = "4";
-                if (bloodgroup == 0)
-                    bloodGroupPrint = "I";
-                if (bloodgroup == 1)
-                    bloodGroupPrint = "II";
-                if (bloodgroup == 2)
-                    bloodGroupPrint = "III";
-                if (bloodgroup == 3)
-                    bloodGroupPrint = "IV";
-                messageText = mySharedPreferences.getString(APP_PREFERENCES_Message, "_")+" "+ name +" "+ surname+" "+ groupBlood + bloodGroupPrint +bloodFact ;
+                String bloodGroupPrint = "";
+                switch(bloodgroup) {
+                    case 0:
+                        bloodGroupPrint = "I";
+                    case 1:
+                        bloodGroupPrint = "II";
+                    case 2:
+                        bloodGroupPrint = "III";
+                    case 3:
+                        bloodGroupPrint = "IV";
+                }
+                messageText = mySharedPreferences.getString(APP_PREFERENCES_Message, "_")+" "+ myName + name +" "+ surname+" "+ groupBlood + bloodGroupPrint +bloodFact ;
                 Toast.makeText(this, messageText, Toast.LENGTH_SHORT).show();
                 SmsManager.getDefault()
                         .sendTextMessage(numberChoose, null, messageText, null, null);// закомментированы смс чтобы не тратить деньги, код рабочий
