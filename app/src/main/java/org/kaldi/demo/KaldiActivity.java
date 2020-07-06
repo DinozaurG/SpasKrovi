@@ -73,9 +73,9 @@ public class KaldiActivity extends AppCompatActivity implements
 
     // звонок и сообщение
     private String numberChoose = "tel:";//пишите свой номер
-    static private final String numberPolice = "tel:102";//пишите свой номер
-    static private final String numberAmbulance = "tel:102";//пишите свой номер
-    static private final String numberFireService = "tel:101";//пишите свой номер
+    static private final String numberPolice = "tel:89137573584";//пишите свой номер
+    static private final String numberAmbulance = "tel:89137573584";//пишите свой номер
+    static private final String numberFireService = "tel:89137573584";//пишите свой номер
     private String messageText = "Проверка работы";
     private String groupBlood = " Группа крови ";
     private String resBlood = " резус ";
@@ -384,7 +384,7 @@ public class KaldiActivity extends AppCompatActivity implements
                     Toast toast = Toast.makeText(getApplicationContext(),
                             "Таймер прошел!", Toast.LENGTH_SHORT);
                     toast.show();
-                    phoneCall(numberChoose, true);
+                    phoneCall(numberPolice, true);
                 }
             }.start();
         }
@@ -493,7 +493,7 @@ public class KaldiActivity extends AppCompatActivity implements
             }
 
             SharedPreferences mySharedPreferences = getSharedPreferences(STORAGE_NAME, Activity.MODE_PRIVATE);
-            if (flag){
+
                 numberChoose = "tel:" + mySharedPreferences.getString(APP_PREFERENCES_Number, "0");
                 Toast.makeText(this, number, Toast.LENGTH_SHORT).show();
                 int bloodgroup = mySharedPreferences.getInt(APP_PREFERENCES_BloodNumber,5);
@@ -520,7 +520,7 @@ public class KaldiActivity extends AppCompatActivity implements
                 Toast.makeText(this, messageText, Toast.LENGTH_SHORT).show();
                 SmsManager.getDefault()
                         .sendTextMessage(numberChoose, null, messageText, null, null);// закомментированы смс чтобы не тратить деньги, код рабочий
-            }
+
             Intent intent = new Intent(Intent.ACTION_CALL);
             intent.setData(Uri.parse(number));
             if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
