@@ -14,12 +14,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="1"
-        android:padding="16dp">
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="16dp">
 
         <TextView
             android:textColor="#000000"
@@ -76,21 +85,21 @@
             android:textColor="#000000"
             android:textSize="18sp" />
 
-        <Spinner
-            android:id="@+id/selectedBloodGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:entries="@array/bloodGroup"
-            android:spinnerMode="dropdown" />
+                <Spinner
+                    android:id="@+id/selectedBloodGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:entries="@array/bloodGroup"
+                    android:spinnerMode="dropdown" />
 
-        <Spinner
-            android:layout_marginTop="8dp"
-            android:id="@+id/selectedBloodFactor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:spinnerMode="dropdown"
-            android:entries="@array/bloodFactor" />
+                <Spinner
+                    android:id="@+id/selectedBloodFactor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:entries="@array/bloodFactor"
+                    android:spinnerMode="dropdown" />
 
         <TextView
             android:textColor="#000000"
@@ -129,41 +138,46 @@
                 android:hint="Номер для сообщения что вы в опасности" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp">
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/message"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Пример сообщения для отправки"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/selectedMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginTop="2dp"
+                    android:text="(В конце сообщения добавятся ваши координаты)" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Пример сообщения для отправки"
-                android:textSize="14sp" />
-        </com.google.android.material.textfield.TextInputLayout>
-        <TextView
-            android:id="@+id/selectedMessage"
-            android:layout_marginTop="2dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
-            android:text="(В конце сообщения добавятся ваши координаты)"
-            />
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:padding="16dp">
 
+                <Button
+                    android:id="@+id/buttonSave"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:text="Сохранить данные"
+                    android:textColor="@color/colorWhite" />
+            </LinearLayout>
 
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_gravity="bottom"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
-        <Button
-            android:id="@+id/buttonSave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:text="Сохранить данные"
-            android:textColor="@color/colorWhite" />
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
