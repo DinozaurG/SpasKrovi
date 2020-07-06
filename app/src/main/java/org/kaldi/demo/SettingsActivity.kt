@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +16,6 @@ import org.kaldi.demo.PersistantStorage.*
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var prefs: SharedPreferences
     private val APP_PREFERENCES = "settings_spasscrovi"//название файла
     private val APP_PREFERENCES_FirstName = "FirstName"
     private val APP_PREFERENCES_SecondName = "SecondName"
@@ -34,10 +34,7 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
         supportActionBar?.title = "Settings"
-
-        //sharedClass = PersistantStorage.init(this)
-
-        prefs = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
+        PersistantStorage.init(this);
         printData()
 
         buttonSave.setOnClickListener{
@@ -46,7 +43,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     fun saveData(){
-        Toast.makeText(this, "start", Toast.LENGTH_SHORT).show()
         var name = name.getText().toString() // здесь содержится текст, введенный в текстовом поле
         var surname = surname.getText().toString()
         var middlename = middleName.getText().toString()
@@ -63,12 +59,10 @@ class SettingsActivity : AppCompatActivity() {
         addProperty(APP_PREFERENCES_Number,number)
         addProperty(APP_PREFERENCES_Message,message)
 
-        Toast.makeText(this, "end", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "save", Toast.LENGTH_SHORT).show()
     }
 
     fun printData(){
-        Toast.makeText(this, "start 111", Toast.LENGTH_SHORT).show()
-
 
         name.setText(getProperty(APP_PREFERENCES_FirstName))
         surname.setText(getProperty(APP_PREFERENCES_SecondName));
@@ -78,8 +72,6 @@ class SettingsActivity : AppCompatActivity() {
         selectedBloodFactor.setSelection(getPropertyInt(APP_PREFERENCES_BloodRes))
         selectedPhoneForCall.setText(getProperty(APP_PREFERENCES_Number))
         message.setText(getProperty(APP_PREFERENCES_Message))
-
-        Toast.makeText(this, "end 111", Toast.LENGTH_SHORT).show()
     }
     
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -9,8 +9,9 @@ public class PersistantStorage {
     private static SharedPreferences.Editor editor = null;
     private static Context context = null;
 
-    public static void init( Context cntxt ){
+    public static PersistantStorage init(Context cntxt ){
         context = cntxt;
+        return null;
     }
 
     private static void init(){
@@ -38,7 +39,7 @@ public class PersistantStorage {
         if( settings == null ){
             init();
         }
-        return settings.getString( name, null );
+        return settings.getString( name, "_" );
     }
 
     public static int getPropertyInt(String name){

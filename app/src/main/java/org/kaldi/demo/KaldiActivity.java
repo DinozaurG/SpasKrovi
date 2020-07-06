@@ -20,6 +20,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
@@ -29,6 +30,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,7 +63,6 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-
 public class KaldiActivity extends AppCompatActivity implements
         RecognitionListener {
 
@@ -70,11 +71,15 @@ public class KaldiActivity extends AppCompatActivity implements
     }
 
     // звонок и сообщение
-    static private final String number = "tel:89234434521";//пишите свой номер
+    private String numberChoose = "tel:";//пишите свой номер
     static private final String numberPolice = "tel:89059928516";//пишите свой номер
     static private final String numberAmbulance = "tel:89059928516";//пишите свой номер
     static private final String numberFireService = "tel:89059928516";//пишите свой номер
-    static private final String messageText = "Проверка работы";
+    private String messageText = "Проверка работы";
+
+    PersistantStorage sharedClass = PersistantStorage.init(this);
+    public static final String STORAGE_NAME = "StorageName";
+    private SharedPreferences sharedPrefs;
 
     static private final int STATE_START = 0;
     static private final int STATE_READY = 1;
@@ -107,6 +112,14 @@ public class KaldiActivity extends AppCompatActivity implements
     String longitude;
     LocationRequest locationRequest = new LocationRequest();
 
+    //переменные для получения данных
+    private String APP_PREFERENCES_FirstName = "FirstName";
+    private String APP_PREFERENCES_SecondName = "SecondName";
+    private String APP_PREFERENCES_MiddleName = "MiddleName";
+    private String APP_PREFERENCES_BloodNumber = "BloodNumber";
+    private String APP_PREFERENCES_BloodRes = "BloodRes";
+    private String APP_PREFERENCES_Number = "Number";
+    private String APP_PREFERENCES_Message = "Message";
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -145,21 +158,21 @@ public class KaldiActivity extends AppCompatActivity implements
         findViewById(R.id.call_ambulance).setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 phoneCall(numberAmbulance);
+                 phoneCall(numberAmbulance, false);
              }
         });
 
         findViewById(R.id.call_fire).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                phoneCall(numberFireService);
+                phoneCall(numberFireService, false);
             }
         });
 
         findViewById(R.id.call_police).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                phoneCall(numberPolice);
+                phoneCall(numberPolice, false);
             }
         });
 
@@ -353,6 +366,7 @@ public class KaldiActivity extends AppCompatActivity implements
     @Override
     public void onResult(String hypothesis) {
 
+
         // Сюда добавляем все, что начинает работать после код слова, лучше после таймера.
         if(hypothesis.contains(CODE_WORD)){
             notification();
@@ -365,7 +379,7 @@ public class KaldiActivity extends AppCompatActivity implements
                     Toast toast = Toast.makeText(getApplicationContext(),
                             "Таймер прошел!", Toast.LENGTH_SHORT);
                     toast.show();
-                    phoneCall(number);
+                    phoneCall(numberChoose, true);
                 }
             }.start();
         }
@@ -467,13 +481,24 @@ public class KaldiActivity extends AppCompatActivity implements
         }
     }
 
-    public boolean phoneCall(String number) {
+    public boolean phoneCall(String number, Boolean flag) {
         try {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SEND_SMS}, PERMISSIONS_REQUEST_SEND_SMS);
             }
-            //SmsManager.getDefault()
-            //        .sendTextMessage(number, null, messageText, null, null);// закомментированы смс чтобы не тратить деньги, код рабочий
+            SharedPreferences settings = null;
+            SharedPreferences.Editor editor = null;
+            sharedPrefs = getSharedPreferences(STORAGE_NAME , Context.MODE_PRIVATE);
+            editor = settings.edit();
+            //number = sharedPrefs.getString(APP_PREFERENCES_Number, "0");
+            if (flag){
+                number = "tel:" + settings.getString(APP_PREFERENCES_Number, "0");
+                messageText = settings.getString(APP_PREFERENCES_Message, "_")+
+                        " Группа крови " + settings.getString(APP_PREFERENCES_BloodNumber,"_") +
+                        " резуз "+ settings.getString(APP_PREFERENCES_BloodRes,"_");
+                SmsManager.getDefault()
+                        .sendTextMessage(numberChoose, null, messageText, null, null);// закомментированы смс чтобы не тратить деньги, код рабочий
+            }
             Intent intent = new Intent(Intent.ACTION_CALL);
             intent.setData(Uri.parse(number));
             if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
