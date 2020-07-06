@@ -77,12 +77,13 @@
             android:textSize="18sp" />
 
         <Spinner
-            android:layout_marginTop="8dp"
             android:id="@+id/selectedBloodGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:spinnerMode="dropdown"
-            android:entries="@array/bloodGroup" />
+            android:layout_marginTop="8dp"
+            android:entries="@array/bloodGroup"
+            android:spinnerMode="dropdown" />
+
         <Spinner
             android:layout_marginTop="8dp"
             android:id="@+id/selectedBloodFactor"
@@ -132,11 +133,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp">
+
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:hint="Пример сообщения для отправки" />
+                android:hint="Пример сообщения для отправки"
+                android:textSize="14sp" />
         </com.google.android.material.textfield.TextInputLayout>
         <TextView
             android:id="@+id/selectedMessage"
