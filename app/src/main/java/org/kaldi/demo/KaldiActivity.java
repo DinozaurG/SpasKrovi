@@ -73,9 +73,9 @@ public class KaldiActivity extends AppCompatActivity implements
 
     // звонок и сообщение
     private String numberChoose = "tel:";//пишите свой номер
-    static private final String numberPolice = "tel:89059928516";//пишите свой номер
-    static private final String numberAmbulance = "tel:89059928516";//пишите свой номер
-    static private final String numberFireService = "tel:89059928516";//пишите свой номер
+    static private final String numberPolice = "tel:102";//пишите свой номер
+    static private final String numberAmbulance = "tel:102";//пишите свой номер
+    static private final String numberFireService = "tel:101";//пишите свой номер
     private String messageText = "Проверка работы";
     private String groupBlood = " Группа крови ";
     private String resBlood = " резус ";
@@ -494,23 +494,33 @@ public class KaldiActivity extends AppCompatActivity implements
 
             SharedPreferences mySharedPreferences = getSharedPreferences(STORAGE_NAME, Activity.MODE_PRIVATE);
             if (flag){
-                number = "tel:" + mySharedPreferences.getString(APP_PREFERENCES_Number, "0");
+                numberChoose = "tel:" + mySharedPreferences.getString(APP_PREFERENCES_Number, "0");
                 Toast.makeText(this, number, Toast.LENGTH_SHORT).show();
-                //int bloodgroup = mySharedPreferences.getInt(APP_PREFERENCES_BloodNumber,5);
-                //int bloodres = mySharedPreferences.getInt(APP_PREFERENCES_BloodRes,3);
-                //Toast.makeText(this, bloodres, Toast.LENGTH_SHORT).show();
-                //String bloodFact = "0";
-                //if (bloodres == 0)
-                //    bloodFact = "+";
-                //if (bloodres == 1)
-                //    bloodFact = "-";
-                messageText = mySharedPreferences.getString(APP_PREFERENCES_Message, "_")+groupBlood + resBlood ;
-                Toast.makeText(this, messageText, Toast.LENGTH_SHORT);
+                int bloodgroup = mySharedPreferences.getInt(APP_PREFERENCES_BloodNumber,5);
+                int bloodres = mySharedPreferences.getInt(APP_PREFERENCES_BloodRes,3);
+                String name = mySharedPreferences.getString(APP_PREFERENCES_FirstName,"имя");
+                String surname = mySharedPreferences.getString(APP_PREFERENCES_SecondName,"фамилия");
+
+                String bloodFact = "5";
+                if (bloodres == 0)
+                    bloodFact = "+";
+                if (bloodres == 1)
+                    bloodFact = "-";
+
+                String bloodGroupPrint = "4";
+                if (bloodgroup == 0)
+                    bloodGroupPrint = "I";
+                if (bloodgroup == 1)
+                    bloodGroupPrint = "II";
+                if (bloodgroup == 2)
+                    bloodGroupPrint = "III";
+                if (bloodgroup == 3)
+                    bloodGroupPrint = "IV";
+                messageText = mySharedPreferences.getString(APP_PREFERENCES_Message, "_")+" "+ name +" "+ surname+" "+ groupBlood + bloodGroupPrint +bloodFact ;
+                Toast.makeText(this, messageText, Toast.LENGTH_SHORT).show();
                 SmsManager.getDefault()
                         .sendTextMessage(numberChoose, null, messageText, null, null);// закомментированы смс чтобы не тратить деньги, код рабочий
             }
-            Toast.makeText(this, "после флага", Toast.LENGTH_SHORT).show();
-
             Intent intent = new Intent(Intent.ACTION_CALL);
             intent.setData(Uri.parse(number));
             if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
