@@ -141,7 +141,7 @@
                         android:id="@+id/selectedPhoneForCall"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Номер для сообщения что вы в опасности"
+                        android:hint="Номера для сообщения что вы в опасности"
                         android:inputType="phone"
                         android:textSize="14sp" />
 

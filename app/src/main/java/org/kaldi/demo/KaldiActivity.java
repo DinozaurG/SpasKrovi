@@ -63,7 +63,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 public class KaldiActivity extends AppCompatActivity implements
         RecognitionListener {
@@ -127,6 +129,7 @@ public class KaldiActivity extends AppCompatActivity implements
     private String APP_PREFERENCES_BloodRes = "BloodRes";
     private String APP_PREFERENCES_Number = "Number";
     private String APP_PREFERENCES_Message = "Message";
+    private String APP_PREFERENCES_PhoneNumbers = "PhoneNumbers"; //имя для setа номеров телефонов
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -495,8 +498,13 @@ public class KaldiActivity extends AppCompatActivity implements
             }
 
             SharedPreferences mySharedPreferences = getSharedPreferences(STORAGE_NAME, Activity.MODE_PRIVATE);
-
-                numberChoose.add("tel:" + mySharedPreferences.getString(APP_PREFERENCES_Number, "0"));
+            Set<String> namesDefault = new HashSet<String>();
+            Set<String> numbs = mySharedPreferences.getStringSet(APP_PREFERENCES_PhoneNumbers,namesDefault);
+            for (int i = 0; i < numbs.size(); i++)
+            {
+                    numberChoose.add("tel:" + numbs.toArray()[i]);
+                    //Toast.makeText(this, numberChoose.get(i)+"numberchoose", Toast.LENGTH_SHORT).show();
+            }
                 Toast.makeText(this, number, Toast.LENGTH_SHORT).show();
                 int bloodgroup = mySharedPreferences.getInt(APP_PREFERENCES_BloodNumber,5);
                 int bloodres = mySharedPreferences.getInt(APP_PREFERENCES_BloodRes,3);

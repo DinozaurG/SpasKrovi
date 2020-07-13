@@ -117,13 +117,15 @@ class SettingsActivity : AppCompatActivity() {
         var SetNumbers = getPropertySet(APP_PREFERENCES_PhoneNumbers)
         //Toast.makeText(this, SetNumbers.elementAtOrNull(0), Toast.LENGTH_SHORT).show()
 
-        var StrokeNumbers = ""
+        var StrokeNumbers: String = ""
         if (SetNumbers.size > 0) {
             for (number in 0..SetNumbers.size-1) {
                 //StrokeNumbers = StrokeNumbers + SetNumbers.elementAt(0) + " "
                 Toast.makeText(this, SetNumbers.elementAtOrNull(number), Toast.LENGTH_SHORT).show()
+                StrokeNumbers += (SetNumbers.elementAt(number)) + " "//.toString()
             }
         }
+
         selectedPhoneForCall.setText(StrokeNumbers)
     }
     
