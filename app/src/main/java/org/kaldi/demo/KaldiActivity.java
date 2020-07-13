@@ -96,7 +96,7 @@ public class KaldiActivity extends AppCompatActivity implements
     private static final int NOTIFY_ID = 101;
     private static final String CHANNEL_ID = "CHANNEL_ID";
 
-    private static final String CODE_WORD = "no";
+    private static final String CODE_WORD = "помогите";
 
     private static final String TAG1 = "MyApp";
 

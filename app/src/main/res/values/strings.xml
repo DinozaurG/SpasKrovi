@@ -23,8 +23,8 @@
     </string-array>
 
     <string-array name="changeCodeWord">
-        <item>help</item>
-        <item>save me</item>
+        <item>спасите</item>
+        <item>помогите</item>
     </string-array>
 
     <string name="police">Полиция</string>
