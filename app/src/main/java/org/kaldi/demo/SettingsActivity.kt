@@ -24,6 +24,7 @@ class SettingsActivity : AppCompatActivity() {
     private val APP_PREFERENCES_BloodRes = "BloodRes"
     private val APP_PREFERENCES_Number = "Number"
     private val APP_PREFERENCES_Message = "Message"
+    private val APP_PREFERENCES_CodeWord = "CodeWord"
     private val APP_PREFERENCES_PhoneNumbers = "PhoneNumbers" //имя для setа номеров телефонов
     private val APP_PREFERENCES_PhoneNumbersCount = "PhoneNumbersCount"//количество номеров телефонов
     var numbers: MutableSet<String> = java.util.HashSet()//set номеров для смс
@@ -85,7 +86,7 @@ class SettingsActivity : AppCompatActivity() {
         var bloodFactor = selectedBloodFactor.selectedItemPosition
         //var number = selectedPhoneForCall.getText().toString()
         var message = message.getText().toString()
-
+        var codeWord = selectedCodeWord.selectedItemPosition
         //for (c in 0..count ) {
         //    numbers.add(TextInputLayoutNumber[c].toString())
         //}
@@ -97,6 +98,7 @@ class SettingsActivity : AppCompatActivity() {
         addProperty(APP_PREFERENCES_MiddleName,middlename)
         addPropertyInt(APP_PREFERENCES_BloodNumber,blood)
         addPropertyInt(APP_PREFERENCES_BloodRes,bloodFactor)
+        addPropertyInt(APP_PREFERENCES_CodeWord, codeWord)
         //addProperty(APP_PREFERENCES_Number,number)
         addProperty(APP_PREFERENCES_Message,message)
         addPropertyInt(APP_PREFERENCES_PhoneNumbersCount,currentNumbers.size)
@@ -110,6 +112,7 @@ class SettingsActivity : AppCompatActivity() {
         middleName.setText(getProperty(APP_PREFERENCES_MiddleName));
         selectedBloodGroup.setSelection(getPropertyInt(APP_PREFERENCES_BloodNumber))
         selectedBloodFactor.setSelection(getPropertyInt(APP_PREFERENCES_BloodRes))
+        selectedCodeWord.setSelection(getPropertyInt(APP_PREFERENCES_CodeWord))
         //selectedPhoneForCall.setText(getProperty(APP_PREFERENCES_Number))
         message.setText(getProperty(APP_PREFERENCES_Message))
         var currentCount = getPropertyInt(APP_PREFERENCES_PhoneNumbersCount)

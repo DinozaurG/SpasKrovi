@@ -99,7 +99,7 @@ public class KaldiActivity extends AppCompatActivity implements
     private static final int NOTIFY_ID = 101;
     private static final String CHANNEL_ID = "CHANNEL_ID";
 
-    private static final String CODE_WORD = "помогите";
+    private  String CODE_WORD = "помогите";
 
     private static final String TAG1 = "MyApp";
 
@@ -129,6 +129,7 @@ public class KaldiActivity extends AppCompatActivity implements
     private String APP_PREFERENCES_BloodRes = "BloodRes";
     private String APP_PREFERENCES_Number = "Number";
     private String APP_PREFERENCES_Message = "Message";
+    private String APP_PREFERENCES_CodeWord = "CodeWord";
     private String APP_PREFERENCES_PhoneNumbers = "PhoneNumbers"; //имя для setа номеров телефонов
 
     @Override
@@ -157,6 +158,9 @@ public class KaldiActivity extends AppCompatActivity implements
 
         // Setup layout
         setUiState(STATE_START);
+
+        //установка кодового слова
+        setCodeWord();
 
         findViewById(R.id.recognize_mic).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -350,6 +354,8 @@ public class KaldiActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        //установка кодового слова
+        setCodeWord();
         startLocationUpdates();
     }
 
@@ -463,7 +469,17 @@ public class KaldiActivity extends AppCompatActivity implements
         findViewById(R.id.recognize_mic).setEnabled(false);
     }
 
-
+    public void setCodeWord(){
+        //установка кодового слова
+        SharedPreferences mySharedPreferences = getSharedPreferences(STORAGE_NAME, Activity.MODE_PRIVATE);
+        int word = mySharedPreferences.getInt(APP_PREFERENCES_CodeWord,1);
+        switch (word) {
+            case 0:
+                CODE_WORD = "спасите";
+            case 1:
+                CODE_WORD = "помогите";
+        }
+    }
 
     public void recognizeMicrophone() {
         if (recognizer != null) {
@@ -497,8 +513,8 @@ public class KaldiActivity extends AppCompatActivity implements
                     //Toast.makeText(this, numberChoose.get(i)+"numberchoose", Toast.LENGTH_SHORT).show();
             }
                 Toast.makeText(this, number, Toast.LENGTH_SHORT).show();
-                int bloodgroup = mySharedPreferences.getInt(APP_PREFERENCES_BloodNumber,5);
-                int bloodres = mySharedPreferences.getInt(APP_PREFERENCES_BloodRes,3);
+                int bloodgroup = mySharedPreferences.getInt(APP_PREFERENCES_BloodNumber,0);
+                int bloodres = mySharedPreferences.getInt(APP_PREFERENCES_BloodRes,0);
                 String name = mySharedPreferences.getString(APP_PREFERENCES_FirstName,"имя");
                 String surname = mySharedPreferences.getString(APP_PREFERENCES_SecondName,"фамилия");
 
