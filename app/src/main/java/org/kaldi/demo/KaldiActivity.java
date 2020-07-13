@@ -76,7 +76,7 @@ public class KaldiActivity extends AppCompatActivity implements
 
     // звонок и сообщение
     private ArrayList<String> numberChoose = new ArrayList<String>();//пишите свой номер
-    static private final String numberPolice = "tel:102";
+    static private final String numberPolice = "tel:89234434521";
     static private final String numberAmbulance = "tel:103";
     static private final String numberFireService = "tel:101";
     private String messageText = "Проверка работы";
@@ -274,13 +274,6 @@ public class KaldiActivity extends AppCompatActivity implements
                 Manifest.permission.ACCESS_COARSE_LOCATION
         ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         Toast.makeText(this, latitude + " " + longitude, Toast.LENGTH_LONG).show();
@@ -528,7 +521,7 @@ public class KaldiActivity extends AppCompatActivity implements
                     case 3:
                         bloodGroupPrint = "IV";
                 }
-                messageText = mySharedPreferences.getString(APP_PREFERENCES_Message, "_")+" "+ myName + name +" "+ surname+" "+ groupBlood + bloodGroupPrint +bloodFact ;
+                messageText = mySharedPreferences.getString(APP_PREFERENCES_Message, "_") + " " + myName + name + " " + surname + " " + groupBlood + bloodGroupPrint + bloodFact + ". Мои координаты: " + latitude + " " + longitude;
                 Toast.makeText(this, messageText, Toast.LENGTH_SHORT).show();
                 for ( int num = 0; num < numberChoose.size(); num++) {
                     Toast.makeText(this, numberChoose.get(num), Toast.LENGTH_SHORT).show();
