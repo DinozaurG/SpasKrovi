@@ -76,7 +76,7 @@ public class KaldiActivity extends AppCompatActivity implements
 
     // звонок и сообщение
     private ArrayList<String> numberChoose = new ArrayList<String>();//пишите свой номер
-    static private final String numberPolice = "tel:89234434521";
+    static private final String numberPolice = "tel:102";
     static private final String numberAmbulance = "tel:103";
     static private final String numberFireService = "tel:101";
     private String messageText = "Проверка работы";
