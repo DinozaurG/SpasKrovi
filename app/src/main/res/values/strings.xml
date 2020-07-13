@@ -30,5 +30,7 @@
     <string name="police">Полиция</string>
     <string name="ambulance">Скорая</string>
     <string name="fire">Пожарная</string>
+    <string name="deletenumbers">Отчистить номера</string>
+    <string name="addnumber">Добавить номер</string>
 
 </resources>

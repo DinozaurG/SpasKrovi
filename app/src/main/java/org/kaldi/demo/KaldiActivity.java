@@ -62,6 +62,7 @@ import org.kaldi.Vosk;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class KaldiActivity extends AppCompatActivity implements
@@ -72,7 +73,7 @@ public class KaldiActivity extends AppCompatActivity implements
     }
 
     // звонок и сообщение
-    private String numberChoose = "tel:";//пишите свой номер
+    private ArrayList<String> numberChoose = new ArrayList<String>();//пишите свой номер
     static private final String numberPolice = "tel:102";
     static private final String numberAmbulance = "tel:103";
     static private final String numberFireService = "tel:101";
@@ -495,7 +496,7 @@ public class KaldiActivity extends AppCompatActivity implements
 
             SharedPreferences mySharedPreferences = getSharedPreferences(STORAGE_NAME, Activity.MODE_PRIVATE);
 
-                numberChoose = "tel:" + mySharedPreferences.getString(APP_PREFERENCES_Number, "0");
+                numberChoose.add("tel:" + mySharedPreferences.getString(APP_PREFERENCES_Number, "0"));
                 Toast.makeText(this, number, Toast.LENGTH_SHORT).show();
                 int bloodgroup = mySharedPreferences.getInt(APP_PREFERENCES_BloodNumber,5);
                 int bloodres = mySharedPreferences.getInt(APP_PREFERENCES_BloodRes,3);
@@ -523,9 +524,11 @@ public class KaldiActivity extends AppCompatActivity implements
                 }
                 messageText = mySharedPreferences.getString(APP_PREFERENCES_Message, "_")+" "+ myName + name +" "+ surname+" "+ groupBlood + bloodGroupPrint +bloodFact ;
                 Toast.makeText(this, messageText, Toast.LENGTH_SHORT).show();
-                SmsManager.getDefault()
-                        .sendTextMessage(numberChoose, null, messageText, null, null);// закомментированы смс чтобы не тратить деньги, код рабочий
-
+                for ( int num = 0; num < numberChoose.size(); num++) {
+                    Toast.makeText(this, numberChoose.get(num), Toast.LENGTH_SHORT).show();
+                    SmsManager.getDefault()
+                            .sendTextMessage(numberChoose.get(num), null, messageText, null, null);// закомментированы смс чтобы не тратить деньги, код рабочий
+                }
             Intent intent = new Intent(Intent.ACTION_CALL);
             intent.setData(Uri.parse(number));
             if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
