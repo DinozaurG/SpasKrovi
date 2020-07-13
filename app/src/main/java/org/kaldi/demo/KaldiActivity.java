@@ -280,14 +280,12 @@ public class KaldiActivity extends AppCompatActivity implements
             return;
         }
         Toast.makeText(this, latitude + " " + longitude, Toast.LENGTH_LONG).show();
-        text = "I need your help\n" +
-                "I am in danger\n" +
-                "My latitude\n" +
-                "is\n" +
+        text = "Я в опасности\n" +
+                "Мне нужна ваша помощь\n" +
+                "Координаты\n" +
+                "Широта\n" +
                 latitude + "\n" +
-                "and\n" +
-                "Longitude\n" +
-                "is\n" +
+                "Долгота\n" +
                 longitude + "\n";
         new CountDownTimer(30000, 5000) {
             public void onTick(long millisUntilFinished) {
